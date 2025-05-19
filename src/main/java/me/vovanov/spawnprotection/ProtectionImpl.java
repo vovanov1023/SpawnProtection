@@ -6,12 +6,6 @@ import org.bukkit.Material;
 import org.bukkit.Statistic;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
-import org.bukkit.event.block.Action;
-import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.block.BlockPlaceEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
 
 import java.util.HashSet;
 import java.util.Objects;
@@ -21,7 +15,7 @@ import java.util.stream.Collectors;
 import static java.lang.Math.round;
 import static me.vovanov.spawnprotection.SpawnProtection.CONFIG;
 
-public class ProtectionImpl implements Listener {
+public class ProtectionImpl {
     private static Set<Material> FORBIDDEN_INTERACTION;
     private static Set<String> FORBIDDEN_SUFFIXES;
     private static int SPAWN_RADIUS;
@@ -47,27 +41,7 @@ public class ProtectionImpl implements Listener {
         return false;
     }
 
-    @EventHandler
-    private void blockBreak(BlockBreakEvent event) {
-        Player player = event.getPlayer();
-        if (hasNotPlayedEnough(player)) event.setCancelled(true);
-    }
-    @EventHandler
-    private void blockPlace(BlockPlaceEvent event) {
-        Player player = event.getPlayer();
-        if (hasNotPlayedEnough(player)) event.setCancelled(true);
-    }
-    @EventHandler
-    private void playerInteract(PlayerInteractEvent event) {
-        Player player = event.getPlayer();
-        Action action = event.getAction();
-        if (action != Action.RIGHT_CLICK_BLOCK) return;
-        if (isAllowedInteraction(event.getClickedBlock())) return;
-
-        if (hasNotPlayedEnough(player)) event.setCancelled(true);
-    }
-
-    public boolean isAllowedInteraction(Block clickedBlock) {
+    public static boolean isAllowedInteraction(Block clickedBlock) {
         if (clickedBlock == null) return true;
         Material clickedBlockType = clickedBlock.getType();
         if (FORBIDDEN_INTERACTION.contains(clickedBlockType)) return false;
@@ -86,7 +60,7 @@ public class ProtectionImpl implements Listener {
         return spawn.distanceSquared(locClone) < SPAWN_RADIUS*SPAWN_RADIUS;
     }
 
-    public boolean hasNotPlayedEnough(Player player) {
+    public static boolean hasNotPlayedEnough(Player player) {
         if (player.hasPermission("sp.bypass")) return false;
         long playTime = player.getStatistic(Statistic.PLAY_ONE_MINUTE);
         if (playTime < REQ_TIME && isNearSpawn(player.getLocation())){
@@ -96,7 +70,7 @@ public class ProtectionImpl implements Listener {
         return false;
     }
 
-    private Component message(long totalTicks) {
+    private static Component message(long totalTicks) {
         long totalSeconds = totalTicks / 20;
         long hours = totalSeconds / 3600;
         long minutes = (totalSeconds % 3600) / 60;

@@ -16,7 +16,7 @@ public final class SpawnProtection extends JavaPlugin {
         SpawnProtectionCommand.reloadPlugin();
         getCommand("spawnprotection").setExecutor(new SpawnProtectionCommand());
         getServer().getPluginManager().registerEvents(new explosions(), this);
-        getServer().getPluginManager().registerEvents(new ProtectionImpl(), this);
+        getServer().getPluginManager().registerEvents(new EventListeners(), this);
         getLogger().info("Плагин запущен");
     }
 
