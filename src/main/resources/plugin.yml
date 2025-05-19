@@ -1,0 +1,19 @@
+name: SpawnProtection
+version: '2.2'
+main: me.vovanov.spawnprotection.SpawnProtection
+api-version: '1.21'
+authors: [ vovanov ]
+description: защита спавна
+permissions:
+  sp.reload:
+    default: op
+  sp.admin:
+    default: op
+    children: [sp.reload, sp.bypass]
+  sp.bypass:
+    default: op
+commands:
+  spawnprotection:
+    description: Основная команда
+    usage: "§e/sp reload - перезагружает файл конфигурации"
+    aliases: [sp]

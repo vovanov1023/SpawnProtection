@@ -1,0 +1,12 @@
+# Защита спавна
+# ignored-blocks: список блоков с которыми игрок может взаимодействовать даже если не наиграл нужное кол-во времени
+# spawn-radius: радиус в блоках вокруг спавна который будет охраняться
+# time-required: время в тиках, которое игрок должен наиграть дабы получить возможность взаимодействия на спавне
+
+forbidden-interaction: [
+  "CHEST", "HOPPER", "FURNACE", "DROPPER", "DISPENSER", "BLAST_FURNACE", "SMOKER", "CAMPFIRE", "BARREL", "#SHULKER_BOX", "ITEM_FRAME", "GLOW_ITEM_FRAME",
+  "TRAPPED_CHEST", "BREWING_STAND", "LECTERN", "CRAFTER", "JUKEBOX", "COMPARATOR", "REPEATER", "SOUL_CAMPFIRE"
+]
+
+spawn-radius: 500
+time-required: 360000
