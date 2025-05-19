@@ -1,5 +1,5 @@
 name: SpawnProtection
-version: '2.2'
+version: '2.3'
 main: me.vovanov.spawnprotection.SpawnProtection
 api-version: '1.21'
 authors: [ vovanov ]
