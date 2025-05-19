@@ -4,7 +4,7 @@
 # time-required: время в тиках, которое игрок должен наиграть дабы получить возможность взаимодействия на спавне
 
 forbidden-interaction: [
-  "CHEST", "HOPPER", "FURNACE", "DROPPER", "DISPENSER", "BLAST_FURNACE", "SMOKER", "CAMPFIRE", "BARREL", "#SHULKER_BOX", "ITEM_FRAME", "GLOW_ITEM_FRAME",
+  "CHEST", "HOPPER", "FURNACE", "DROPPER", "DISPENSER", "BLAST_FURNACE", "SMOKER", "CAMPFIRE", "BARREL", "#SHULKER_BOX",
   "TRAPPED_CHEST", "BREWING_STAND", "LECTERN", "CRAFTER", "JUKEBOX", "COMPARATOR", "REPEATER", "SOUL_CAMPFIRE"
 ]
 
