@@ -1,6 +1,5 @@
-package me.vovanov.spawnprotection.commands;
+package me.vovanov.spawnprotection;
 
-import me.vovanov.spawnprotection.ProtectionImpl;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -32,5 +31,6 @@ public class SpawnProtectionCommand implements CommandExecutor {
         PLUGIN.reloadConfig();
         CONFIG = PLUGIN.getConfig();
         ProtectionImpl.setup();
+        SpawnProtection.debugMode = CONFIG.getBoolean("debug");
     }
 }

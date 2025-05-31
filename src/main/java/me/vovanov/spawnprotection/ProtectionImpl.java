@@ -5,32 +5,48 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Statistic;
 import org.bukkit.block.Block;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import static java.lang.Math.round;
-import static me.vovanov.spawnprotection.SpawnProtection.CONFIG;
+import static me.vovanov.spawnprotection.SpawnProtection.*;
+import static org.apache.commons.lang3.EnumUtils.isValidEnum;
 
 public class ProtectionImpl {
-    private static Set<Material> FORBIDDEN_INTERACTION;
+    private static Set<Material> FORBIDDEN_BLOCK_INTERACTION;
+    private static Set<EntityType> FORBIDDEN_ENTITY_INTERACTION;
     private static Set<String> FORBIDDEN_SUFFIXES;
     private static int SPAWN_RADIUS;
     private static long REQ_TIME;
 
     public static void setup() {
         FORBIDDEN_SUFFIXES = new HashSet<>();
-        FORBIDDEN_INTERACTION = new HashSet<>();
+        FORBIDDEN_BLOCK_INTERACTION = new HashSet<>();
+        FORBIDDEN_ENTITY_INTERACTION = new HashSet<>();
 
-        FORBIDDEN_INTERACTION = CONFIG.getStringList("forbidden-interaction")
+        List<String> forbBlockInt = CONFIG.getStringList("forbidden-block-interaction");
+        List<String> forbEntityInt = CONFIG.getStringList("forbidden-entity-interaction");
+
+        FORBIDDEN_BLOCK_INTERACTION = forbBlockInt
                 .stream()
                 .filter(ProtectionImpl::isNotSuffix)
                 .map(Material::matchMaterial)
                 .filter(Objects::nonNull)
                 .collect(Collectors.toSet());
+
+        FORBIDDEN_ENTITY_INTERACTION = forbEntityInt
+                .stream()
+                .map(ProtectionImpl::matchEntityType)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toSet());
+
         SPAWN_RADIUS = CONFIG.getInt("spawn-radius");
         REQ_TIME = CONFIG.getInt("time-required");
     }
@@ -41,15 +57,33 @@ public class ProtectionImpl {
         return false;
     }
 
+    private static EntityType matchEntityType(String name) {
+        if (name == null) return null;
+        String enumString = name
+                .strip()
+                .replace("minecraft:", "")
+                .replace(" ", "_")
+                .replace("-", "_")
+                .toUpperCase();
+        if (isValidEnum(EntityType.class, enumString)) return EntityType.valueOf(enumString);
+        return null;
+    }
+
     public static boolean isAllowedInteraction(Block clickedBlock) {
         if (clickedBlock == null) return true;
         Material clickedBlockType = clickedBlock.getType();
-        if (FORBIDDEN_INTERACTION.contains(clickedBlockType)) return false;
+        if (FORBIDDEN_BLOCK_INTERACTION.contains(clickedBlockType)) return false;
         String clickedBlockName = clickedBlockType.toString();
         for (String forbiddenSuffix : FORBIDDEN_SUFFIXES) {
             if (clickedBlockName.endsWith(forbiddenSuffix)) return false;
         }
         return true;
+    }
+
+    public static boolean isAllowedInteraction(Entity clickedEntity) {
+        if (clickedEntity == null) return true;
+        EntityType clickedEntityType = clickedEntity.getType();
+        return !FORBIDDEN_ENTITY_INTERACTION.contains(clickedEntityType);
     }
 
     public static boolean isNearSpawn(Location loc) {
@@ -61,10 +95,14 @@ public class ProtectionImpl {
     }
 
     public static boolean hasNotPlayedEnough(Player player) {
+        return hasNotPlayedEnough(player, true);
+    }
+
+    public static boolean hasNotPlayedEnough(Player player, boolean notifyPlayer) {
         if (player.hasPermission("sp.bypass")) return false;
         long playTime = player.getStatistic(Statistic.PLAY_ONE_MINUTE);
-        if (playTime < REQ_TIME && isNearSpawn(player.getLocation())){
-            player.sendActionBar(message(REQ_TIME-playTime));
+        if (playTime < REQ_TIME) {
+            if (notifyPlayer && isNearSpawn(player.getLocation())) player.sendActionBar(message(REQ_TIME-playTime));
             return true;
         }
         return false;
@@ -77,5 +115,11 @@ public class ProtectionImpl {
         long seconds = totalSeconds % 60;
         String formattedTime = String.format("%02dч %02dм %02dс", round(hours), round(minutes), round(seconds));
         return Component.text("§cНаиграйте ещё "+formattedTime+" чтобы сделать это в радиусе "+SPAWN_RADIUS+" блоков от спавна");
+    }
+
+    public static boolean checkPlayer(Player player, String debugMessage) {
+        if (!hasNotPlayedEnough(player) || !isNearSpawn(player.getLocation())) return false;
+        if (debugMode) PLUGIN.getLogger().info(player.getName()+" "+debugMessage);
+        return true;
     }
 }
