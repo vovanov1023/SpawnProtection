@@ -3,7 +3,7 @@ plugins {
 }
 
 group = 'me.vovanov'
-version = '2.3'
+version = pluginVersion
 
 repositories {
     mavenCentral()
@@ -18,7 +18,7 @@ repositories {
 }
 
 dependencies {
-    compileOnly("io.papermc.paper:paper-api:1.21-R0.1-SNAPSHOT")
+    compileOnly("io.papermc.paper:paper-api:$minecraftVersion-R0.1-SNAPSHOT")
 }
 
 def targetJavaVersion = 21
@@ -40,10 +40,7 @@ tasks.withType(JavaCompile).configureEach {
 }
 
 processResources {
-    def props = [version: version]
-    inputs.properties props
-    filteringCharset 'UTF-8'
     filesMatching('plugin.yml') {
-        expand props
+        expand(project.properties)
     }
 }

@@ -1,7 +1,7 @@
 name: SpawnProtection
-version: '2.3'
+version: ${pluginVersion}
 main: me.vovanov.spawnprotection.SpawnProtection
-api-version: '1.21'
+api-version: ${minecraftVersion}
 authors: [ vovanov ]
 description: защита спавна
 permissions:
