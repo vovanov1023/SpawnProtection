@@ -1,7 +1,6 @@
 package me.vovanov.spawnprotection;
 
 import org.bukkit.Material;
-import org.bukkit.block.data.type.Fire;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -147,14 +146,6 @@ public class EventListeners implements Listener {
             event.setCancelled(true);
             if (debugMode) PLUGIN.getLogger().info("Сущность попыталась изменить состояние блока");
         }
-    }
-
-    @EventHandler
-    public void onFireSpread(BlockSpreadEvent event) {
-        if (!(event.getBlock() instanceof Fire)) return;
-        if (!isNearSpawn(event.getNewState().getLocation())) return;
-        event.setCancelled(true);
-        if (debugMode) PLUGIN.getLogger().info("Огонь попытался распространится");
     }
 
 }
