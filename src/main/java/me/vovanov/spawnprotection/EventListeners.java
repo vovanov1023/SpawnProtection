@@ -1,6 +1,7 @@
 package me.vovanov.spawnprotection;
 
 import org.bukkit.Material;
+import org.bukkit.block.data.type.Fire;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -124,14 +125,15 @@ public class EventListeners implements Listener {
     }
 
     @EventHandler
-    void blockExplode(BlockExplodeEvent event){
+    public void blockExplode(BlockExplodeEvent event) {
         if (isNearSpawn(event.getBlock().getLocation())) {
             event.blockList().clear();
             if (debugMode) PLUGIN.getLogger().info("Блок попытался взорваться");
         }
     }
+
     @EventHandler
-    void entityExplode(EntityExplodeEvent event){
+    public void entityExplode(EntityExplodeEvent event) {
         if (isNearSpawn(event.getEntity().getLocation())) {
             event.blockList().clear();
             if (debugMode) PLUGIN.getLogger().info("Сущность попыталась взорваться");
@@ -139,11 +141,20 @@ public class EventListeners implements Listener {
     }
 
     @EventHandler
-    void entityBlockBreak(EntityChangeBlockEvent event) {
+    public void entityBlockBreak(EntityChangeBlockEvent event) {
         Entity entity = event.getEntity();
         if ((entity instanceof Wither || entity instanceof Enderman) && isNearSpawn(event.getBlock().getLocation())) {
             event.setCancelled(true);
             if (debugMode) PLUGIN.getLogger().info("Сущность попыталась изменить состояние блока");
         }
     }
+
+    @EventHandler
+    public void onFireSpread(BlockSpreadEvent event) {
+        if (!(event.getBlock() instanceof Fire)) return;
+        if (!isNearSpawn(event.getNewState().getLocation())) return;
+        event.setCancelled(true);
+        if (debugMode) PLUGIN.getLogger().info("Огонь попытался распространится");
+    }
+
 }
