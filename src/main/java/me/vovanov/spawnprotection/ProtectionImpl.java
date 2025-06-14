@@ -95,17 +95,9 @@ public class ProtectionImpl {
     }
 
     public static boolean hasNotPlayedEnough(Player player) {
-        return hasNotPlayedEnough(player, true);
-    }
-
-    public static boolean hasNotPlayedEnough(Player player, boolean notifyPlayer) {
         if (player.hasPermission("sp.bypass")) return false;
         long playTime = player.getStatistic(Statistic.PLAY_ONE_MINUTE);
-        if (playTime < REQ_TIME) {
-            if (notifyPlayer && isNearSpawn(player.getLocation())) player.sendActionBar(message(REQ_TIME-playTime));
-            return true;
-        }
-        return false;
+        return playTime < REQ_TIME;
     }
 
     private static Component message(long totalTicks) {
@@ -119,6 +111,8 @@ public class ProtectionImpl {
 
     public static boolean checkPlayer(Player player, String debugMessage) {
         if (!hasNotPlayedEnough(player) || !isNearSpawn(player.getLocation())) return false;
+        long playTime = player.getStatistic(Statistic.PLAY_ONE_MINUTE);
+        player.sendActionBar(message(REQ_TIME-playTime));
         if (debugMode) PLUGIN.getLogger().info(player.getName()+" "+debugMessage);
         return true;
     }
